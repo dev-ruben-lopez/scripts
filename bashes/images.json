@@ -1,0 +1,16 @@
+{
+  "images": [
+    {
+      "name": "nginx",
+      "version": "latest"
+    },
+    {
+      "name": "alpine",
+      "version": "3.18"
+    },
+    {
+      "name": "ubuntu",
+      "version": "22.04"
+    }
+  ]
+}
