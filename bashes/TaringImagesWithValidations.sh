@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Input JSON file containing image list
+# Input JSON file containing the list of images
 INPUT_JSON="images.json"
 OUTPUT_DIR="imagesDpl"
-HASH_FILE="image_hashes.json"
+HASH_FILE="image_hashes.txt"
 TAR_FILE="imagesDpl.tar"
 
 # Ensure jq is installed
@@ -15,11 +15,12 @@ fi
 # Create the output directory
 mkdir -p "$OUTPUT_DIR"
 
+# Clear the previous hash file
+echo "Filename | SHA-256 Hash" > "$HASH_FILE"
+echo "------------------------" >> "$HASH_FILE"
+
 # Read images from JSON file
 IMAGES=$(jq -c '.images[]' "$INPUT_JSON")
-
-# Clear previous hash file
-echo "[]" > "$HASH_FILE"
 
 # Loop through images
 echo "Pulling and saving Docker images..."
@@ -44,13 +45,13 @@ for IMAGE in $IMAGES; do
     # Compute SHA-256 hash
     SHA256=$(sha256sum "$OUTPUT_DIR/$FILE_NAME" | awk '{print $1}')
 
-    # Store hash in JSON file
-    jq --arg file "$FILE_NAME" --arg sha "$SHA256" '. += [{"file": $file, "sha256": $sha}]' "$HASH_FILE" > tmp.json && mv tmp.json "$HASH_FILE"
+    # Append filename and hash to the text file
+    echo "$FILE_NAME | $SHA256" >> "$HASH_FILE"
 done
 
 # Create a TAR file of the directory
 tar -cvf "$TAR_FILE" "$OUTPUT_DIR"
 
-# Print the JSON hash file in a readable format
-echo "SHA-256 hashes for saved images:"
-jq . "$HASH_FILE"
+# Print the hash file content at the end
+echo -e "\nSHA-256 Hashes of Saved Images:"
+cat "$HASH_FILE"
