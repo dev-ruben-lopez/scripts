@@ -1,0 +1,183 @@
+Securing your Linux system is a smart move, especially if you’re storing sensitive personal data. Here’s a step-by-step security hardening checklist to help you secure it effectively against hacking, trojans, ransomware, and other threats.
+
+⸻
+
+🔐 1. Keep Your System Updated
+	•	Use your package manager to update everything regularly:
+
+sudo apt update && sudo apt upgrade -y     # Debian/Ubuntu
+sudo dnf update -y                         # Fedora/RHEL
+sudo pacman -Syu                           # Arch
+
+
+	•	Enable automatic security updates:
+	•	Ubuntu/Debian:
+
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+
+
+⸻
+
+🔒 2. Limit User Access and Use sudo Wisely
+	•	Use a non-root user for daily use.
+	•	Check who is in the sudo group:
+
+getent group sudo
+
+
+	•	Disable root login over SSH:
+
+sudo nano /etc/ssh/sshd_config
+# Set:
+PermitRootLogin no
+
+Then restart SSH:
+
+sudo systemctl restart sshd
+
+
+
+⸻
+
+🧱 3. Configure a Firewall
+	•	Use UFW (Uncomplicated Firewall):
+
+sudo apt install ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw enable
+sudo ufw allow ssh  # Only if you're using SSH
+
+
+
+⸻
+
+🛡️ 4. Install Antivirus & Rootkit Scanner
+	•	Antivirus (for trojans or malware in downloaded files):
+
+sudo apt install clamav
+sudo freshclam     # update virus database
+sudo clamscan -r /home/yourusername
+
+
+	•	Rootkit detection:
+
+sudo apt install rkhunter
+sudo rkhunter --update
+sudo rkhunter --check
+
+
+
+⸻
+
+🧩 5. Disable Unused Services
+	•	Check what’s running:
+
+sudo systemctl list-units --type=service --state=running
+
+
+	•	Disable anything unnecessary:
+
+sudo systemctl disable service-name
+sudo systemctl stop service-name
+
+
+
+⸻
+
+🕵️ 6. Audit Your System
+	•	Install audit tools:
+
+sudo apt install auditd
+sudo systemctl enable auditd
+sudo systemctl start auditd
+
+
+	•	Monitor user actions and file access using ausearch, auditctl.
+
+⸻
+
+🔍 7. Check for Open Ports
+	•	Use ss or nmap to detect exposed services:
+
+sudo ss -tuln
+nmap -sT localhost
+
+
+	•	Close unnecessary ports/services.
+
+⸻
+
+🛠️ 8. Encrypt Your Data
+	•	Use full disk encryption (LUKS) if setting up from scratch.
+	•	Encrypt sensitive directories or files with:
+	•	gpg
+	•	veracrypt
+	•	ecryptfs (deprecated but still usable)
+	•	Or set up encfs or cryfs.
+
+⸻
+
+👁️ 9. Secure File Permissions
+	•	Ensure sensitive files (like SSH keys, personal data, configs) have correct permissions:
+
+chmod 600 ~/.ssh/id_rsa
+chmod 700 ~/.ssh
+chmod 700 ~/private_data
+
+
+
+⸻
+
+🧬 10. Use AppArmor or SELinux
+	•	Ubuntu/Debian: AppArmor
+
+sudo apt install apparmor apparmor-profiles apparmor-utils
+sudo aa-enforce /etc/apparmor.d/*
+
+
+	•	Fedora/RHEL: SELinux is on by default; keep it in Enforcing mode:
+
+getenforce
+sudo setenforce 1
+
+
+
+⸻
+
+🧑‍💻 11. SSH Best Practices (if using SSH)
+	•	Use key-based auth only:
+
+sudo nano /etc/ssh/sshd_config
+# Set:
+PasswordAuthentication no
+PubkeyAuthentication yes
+
+
+	•	Consider fail2ban to block brute-force attempts:
+
+sudo apt install fail2ban
+
+
+
+⸻
+
+📁 12. Backups
+	•	Use encrypted backups, e.g., borgbackup, restic, or duplicity.
+	•	Store them offsite or in a secure external drive.
+
+⸻
+
+👨‍⚖️ 13. Bonus: Use a Security Checklist Tool
+	•	Lynis (security auditing tool):
+
+sudo apt install lynis
+sudo lynis audit system
+
+
+
+⸻
+
+Would you like a script or Ansible playbook to automate any of this? Or help focusing on desktop security vs server?
