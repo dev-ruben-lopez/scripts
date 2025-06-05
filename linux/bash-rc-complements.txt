@@ -1,0 +1,6 @@
+
+ls alias put:
+alias ls='ls -la --color=auto'
+
+put this line at the end
+PS1='\n\[\e[1;33m\]\u\[\e[0m\] \[\e[1;32m\]|\w\n$(if [[ $? == 0 ]]; then echo "😊"; else echo "😞"; fi) \[\e[1;32m\]>\[\e[0m\] '
